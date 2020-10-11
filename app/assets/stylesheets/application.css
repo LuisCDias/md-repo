@@ -464,13 +464,13 @@ legend {
   -webkit-padding-end: 0;
 }
 
-p.objective {
+.objective {
   background: white;
   padding: 20px;
   border-radius: 3px;
-  min-height: auto;
   line-height: 1.15;
   font-size: 20px;
+  margin-bottom: 20px;
 }
 
 /*===============================
@@ -858,8 +858,8 @@ p.objective {
 }
 
 .s003 form.after-search {
-  position: absolute;
-  top: 100px;
+  /* position: absolute;
+  top: 100px; */
   /* margin-top: -70vh; */
 }
 
