@@ -26,10 +26,11 @@ class CardsController < ApplicationController
   end
 
   def objectives
-    return unless params[:subject] && params[:system] && params[:topic]
+    return unless params[:search] && params[:subject] && params[:system]
 
-    @objectives ||= Question.where(subject: params[:subject],
-                                   system: params[:system],
-                                   topic: params[:topic]).pluck(:objective)
+    query = { subject: params[:subject], system: params[:system] }
+    query.merge!(topic: params[:topic]) if params[:topic] && params[:topic] != 'Topic'
+
+    @objectives ||= Question.where(query).pluck(:objective)
   end
 end

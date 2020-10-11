@@ -50,6 +50,16 @@ $(document).on('turbolinks:load', function() {
 		}, false);
 		topics.remove();
 	}
+
+	$('.btn-search').on('click', function() {
+		const urlParams = new URLSearchParams(window.location.search);
+		if(urlParams.get("search")) {
+			location.reload();
+		}
+		else {
+			window.location = window.location.search + "&search=true";
+		}
+	})
 });
 
 function goToLocation(queryParams, choice) {
