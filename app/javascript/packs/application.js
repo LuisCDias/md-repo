@@ -19,7 +19,7 @@ const Choices = require('choices.js')
 
 $(document).on('turbolinks:load', function() {
 	var subjects = document.querySelector('[data-trigger-subject]')
-	new Choices(subjects, { searchEnabled: false, itemSelectText: 'Medicine' });
+	new Choices(subjects, { searchEnabled: false, itemSelectText: '' });
 	subjects.addEventListener('choice', function(choice) {
 		var queryString = window.location.search;
 		var queryParams = "?subject=";
