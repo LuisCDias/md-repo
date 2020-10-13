@@ -18,38 +18,11 @@ const Choices = require('choices.js')
 
 
 $(document).on('turbolinks:load', function() {
-	var subjects = document.querySelector('[data-trigger-subject]')
-	new Choices(subjects, { searchEnabled: false, itemSelectText: '' });
-	subjects.addEventListener('choice', function(choice) {
-		var queryString = window.location.search;
-		var queryParams = "?subject=";
-		goToLocation(queryParams, choice);
-	}, false);
-	subjects.remove();
+	loadSubjects();
 
-	var systems = document.querySelector('[data-trigger-system]')
-	if(systems != undefined) {
-		new Choices(systems, { searchEnabled: true, itemSelectText: '' });
-		systems.addEventListener('choice', function(choice) {
-			const urlParams = new URLSearchParams(window.location.search);
-			var queryParams = "?subject=" + encodeURIComponent(urlParams.get('subject')) + "&system=";
-			goToLocation(queryParams, choice);
-		}, false);
-		systems.remove();
-	}
+	loadSystems();
 
-	var topics = document.querySelector('[data-trigger-topic]')
-	if(topics != undefined) {
-		new Choices(topics, { searchEnabled: true, itemSelectText: '' });
-		topics.addEventListener('choice', function(choice) {
-			const urlParams = new URLSearchParams(window.location.search);
-			// alert(urlParams.get('system'));
-			var queryParams = "?subject=" + encodeURIComponent(urlParams.get('subject')) +
-												"&system=" + encodeURIComponent(urlParams.get('system')) + "&topic=";
-			goToLocation(queryParams, choice);
-		}, false);
-		topics.remove();
-	}
+	loadTopics();
 
 	$('.btn-search').on('click', function() {
 		const urlParams = new URLSearchParams(window.location.search);
@@ -62,6 +35,72 @@ $(document).on('turbolinks:load', function() {
 	})
 });
 
+function loadSubjects() {
+	var subjects = document.querySelector('[data-trigger-subject]')
+	new Choices(subjects, { searchEnabled: false, itemSelectText: '' });
+	subjects.addEventListener('choice', function(choice) {
+		// if(choice.detail.choice.value == "Subject") return false;
+
+		var queryString = window.location.search;
+		var queryParams = "?subject=";
+		goToLocation(queryParams, choice.detail.choice.value);
+	}, false);
+	subjects.remove();
+}
+
+function loadSystems() {
+	var systems = document.querySelector('[data-trigger-system]')
+	if(systems != undefined) {
+		new Choices(systems, { searchEnabled: true, itemSelectText: '' });
+		systems.addEventListener('choice', function(choice) {
+			// if(choice.detail.choice.value == "System") return false;
+
+			const urlParams = new URLSearchParams(window.location.search);
+			if(urlParams.get('subject') && urlParams.get('subject') != 'Subject') {
+				var queryParams = "?subject=" + encodeURIComponent(urlParams.get('subject')) + "&system=";
+			}
+			else {
+				var queryParams = "?system=";
+			}
+
+			goToLocation(queryParams, choice.detail.choice.value);
+		}, false);
+		systems.remove();
+	}
+}
+
+function loadTopics() {
+	var topics = document.querySelector('[data-trigger-topic]')
+	if(topics != undefined) {
+		new Choices(topics, { searchEnabled: true, itemSelectText: '' });
+		topics.addEventListener('choice', function(choice) {
+			// if(choice.detail.choice.value == "Topic") return false;
+
+			const urlParams = new URLSearchParams(window.location.search);
+
+			if(urlParams.get('subject') && urlParams.get('subject') != 'Subject') {
+				if(urlParams.get('system') && urlParams.get('system') != 'System') {
+					var queryParams = "?subject=" + encodeURIComponent(urlParams.get('subject')) +
+														"&system=" + encodeURIComponent(urlParams.get('system')) + "&topic=";
+				}
+				else {
+					var queryParams = "?subject=" + encodeURIComponent(urlParams.get('subject')) + "&topic=";
+				}
+			}
+			else {
+				if(urlParams.get('system') && urlParams.get('system') != 'System') {
+					var queryParams = "?system=" + encodeURIComponent(urlParams.get('system')) + "&topic=";
+				}
+				else {
+					var queryParams = "?topic=";
+				}
+			}
+			goToLocation(queryParams, choice.detail.choice.value);
+		}, false);
+		topics.remove();
+	}
+}
+
 function goToLocation(queryParams, choice) {
-	window.location = queryParams += encodeURIComponent(choice.detail.choice.value);
+	window.location = queryParams += encodeURIComponent(choice);
 }

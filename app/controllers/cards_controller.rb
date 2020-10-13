@@ -13,24 +13,52 @@ class CardsController < ApplicationController
   end
 
   def systems
-    return unless params[:subject]
-
-    @systems ||= Question.where(subject: params[:subject]).pluck(:system).uniq
+    @systems ||= if has_param?(:subject)
+      Question.where(subject: params[:subject]).pluck(:system).uniq
+    else
+      Question.all.pluck(:system).uniq
+    end
   end
 
   def topics
-    return unless params[:subject] && params[:system]
+    query = if has_param?(:subject) && has_param?(:system)
+      Question.where(subject: params[:subject], system: params[:system])
+    elsif has_param?(:subject)
+      Question.where(subject: params[:subject])
+    elsif has_param?(:system)
+      Question.where(system: params[:system])
+    else
+      Question.all
+    end
 
-    @topics ||= Question.where(subject: params[:subject], system: params[:system])
-                .pluck(:topic).uniq
+    @topics ||= query.pluck(:topic).uniq
   end
 
   def objectives
-    return unless params[:search] && params[:subject] && params[:system]
+    return unless params[:search]
 
-    query = { subject: params[:subject], system: params[:system] }
-    query.merge!(topic: params[:topic]) if params[:topic] && params[:topic] != 'Topic'
+    query = if has_param?(:subject) && has_param?(:system) && has_param?(:topic)
+      Question.where(subject: params[:subject], system: params[:system], topic: params[:topic])
+    elsif has_param?(:subject) && has_param?(:system)
+      Question.where(subject: params[:subject], system: params[:system])
+    elsif has_param?(:system) && has_param?(:topic)
+      Question.where(system: params[:system], topic: params[:topic])
+    elsif has_param?(:subject) && has_param?(:topic)
+      Question.where(subject: params[:subject], topic: params[:topic])
+    elsif has_param?(:subject)
+      Question.where(subject: params[:subject])
+    elsif has_param?(:system)
+      Question.where(system: params[:system])
+    elsif has_param?(:topic)
+      Question.where(topic: params[:topic])
+    else
+      Question.all
+    end
 
-    @objectives ||= Question.where(query).pluck(:objective)
+    @objectives ||= query.pluck(:objective)
+  end
+
+  def has_param?(param)
+    params[param] && params[param] != param.to_s.capitalize
   end
 end
